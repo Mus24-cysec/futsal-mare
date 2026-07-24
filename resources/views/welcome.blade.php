@@ -404,14 +404,23 @@
             </nav>
             
             <div class="nav-actions">
-                <a href="{{ route('admin.login') }}" style="color:var(--muted-2); font-family:var(--mono); font-size:10px; font-weight:700; text-transform:uppercase; text-decoration:none; margin-right:8px; display:flex; align-items:center; gap:4px;">
-                    <span>🛡️</span> Admin Portal
-                </a>
-
                 @if (Route::has('login'))
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn-ui btn-ui-primary btn-ui-sm">MEMBER DASHBOARD</a>
+                        @php
+                            $user = auth()->user();
+                        @endphp
+
+                        @if (isset($user->is_admin) && $user->is_admin == 1)
+                            <a href="{{ route('admin.dashboard') }}" class="btn-ui btn-ui-primary btn-ui-sm">🛡️ DASHBOARD ADMIN</a>
+                        @elseif (isset($user->role) && $user->role === 'staff')
+                            <a href="{{ route('admin.staff.scan') }}" class="btn-ui btn-ui-primary btn-ui-sm">📲 TERMINAL SCANNER</a>
+                        @else
+                            <a href="{{ route('dashboard') }}" class="btn-ui btn-ui-primary btn-ui-sm">MEMBER DASHBOARD</a>
+                        @endif
                     @else
+                        <a href="{{ route('admin.login') }}" style="color:var(--muted-2); font-family:var(--mono); font-size:10px; font-weight:700; text-transform:uppercase; text-decoration:none; margin-right:8px; display:flex; align-items:center; gap:4px;">
+                            <span>🛡️</span> Admin Portal
+                        </a>
                         <a href="{{ route('login') }}" class="btn-ui btn-ui-ghost btn-ui-sm">MASUK</a>
                         @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="btn-ui btn-ui-primary btn-ui-sm">DAFTAR</a>
