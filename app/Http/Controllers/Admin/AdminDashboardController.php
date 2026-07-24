@@ -57,6 +57,46 @@ class AdminDashboardController extends Controller
 
     /**
      * ==========================================
+     * 🎫 MODUL KHUSUS: AUTENTIKASI PORTAL STAFF
+     * ==========================================
+     */
+
+    public function loginStaff(Request $request)
+    {
+        $credentials = $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ], [
+            'email.required'    => 'Email staff wajib diisi.',
+            'email.email'       => 'Format email tidak valid.',
+            'password.required' => 'Password/PIN wajib diisi.',
+        ]);
+
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::user();
+
+            // Memastikan akun yang login memiliki hak akses operasional (is_admin == 1)
+            if ($user->is_admin == 1) {
+                $request->session()->regenerate();
+
+                // Arahkan staff langsung ke terminal/halaman scanner QR
+                return redirect()->route('admin.staff.scan')
+                    ->with('success', 'Selamat bekerja! Sesi Operator Terminal berhasil dibuka.');
+            }
+
+            Auth::logout();
+            return redirect()->back()
+                ->withErrors(['email' => 'Akses Ditolak. Akun Anda tidak memiliki otoritas Staff/Operator.'])
+                ->withInput();
+        }
+
+        return redirect()->back()
+            ->withErrors(['email' => 'Kredensial atau PIN Staff yang Anda masukkan salah.'])
+            ->withInput();
+    }
+
+    /**
+     * ==========================================
      * 📊 MODUL 1: DASHBOARD OVERVIEW ADMIN
      * ==========================================
      */
