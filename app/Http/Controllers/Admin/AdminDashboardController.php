@@ -73,11 +73,21 @@ class AdminDashboardController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $request->session()->regenerate();
+            $user = Auth::user();
 
-            // Arahkan staff langsung ke terminal/halaman scanner QR
-            return redirect()->route('admin.staff.scan')
-                ->with('success', 'Selamat bekerja! Sesi Operator Terminal berhasil dibuka.');
+            // Memastikan akun yang login memiliki hak akses operasional (is_admin == 1)
+            if ($user->is_admin == 1) {
+                $request->session()->regenerate();
+
+                // Arahkan staff langsung ke terminal/halaman scanner QR
+                return redirect()->route('admin.staff.scan')
+                    ->with('success', 'Selamat bekerja! Sesi Operator Terminal berhasil dibuka.');
+            }
+
+            Auth::logout();
+            return redirect()->back()
+                ->withErrors(['email' => 'Akses Ditolak. Akun Anda tidak memiliki otoritas Staff/Operator.'])
+                ->withInput();
         }
 
         return redirect()->back()
