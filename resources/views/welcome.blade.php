@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Futsal Mare - Reservasi Lapangan Premium Kota Baubau</title>
     
+    <!-- TAMBAHKAN BARIS INI UNTUK MENGUBAH ICON TAB BROWSER -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:ital,wght@0,400..800;1,400..800&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
@@ -129,8 +132,8 @@
             border-bottom: 1px solid rgba(241, 245, 249, 0.08);
         }
         .nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; }
-        .logo { display: flex; align-items: center; gap: 10px; font-family: var(--display); font-size: 26px; color: white; text-decoration: none; }
-        .logo .dot { width: 10px; height: 10px; background: var(--turf); border-radius: 2px; transform: rotate(45deg); box-shadow: 0 0 10px var(--turf); }
+        .logo { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-size: 26px; color: white; text-decoration: none; }
+        .logo img { height: 36px; width: auto; object-fit: contain; }
         .nav-links { display: flex; gap: 32px; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
         .nav-links a { color: var(--muted); text-decoration: none; transition: color .2s ease; }
         .nav-links a:hover { color: var(--turf); }
@@ -392,7 +395,12 @@
     <header>
         <div class="nav wrap">
             <a href="#" class="logo">
-                <span class="dot"></span>FUTSAL<span style="color:var(--muted-2); font-family:var(--body); font-weight:400; font-size:12px; margin-left:2px;">MARE</span>
+                @if(file_exists(public_path('images/logo.png')))
+                    <img src="{{ asset('images/logo.png') }}" alt="Futsal Mare Logo">
+                @else
+                    <span style="width: 10px; height: 10px; background: var(--turf); border-radius: 2px; transform: rotate(45deg); box-shadow: 0 0 10px var(--turf);"></span>
+                @endif
+                FUTSAL<span style="color:var(--muted-2); font-family:var(--body); font-weight:400; font-size:12px; margin-left:2px;">MARE</span>
             </a>
             
             <nav class="nav-links">
@@ -706,7 +714,12 @@
             <div class="foot-grid">
                 <div>
                     <a href="#" class="logo" style="margin-bottom: 16px;">
-                        <span class="dot"></span>FUTSAL<span style="color:var(--muted-2); font-family:var(--body); font-weight:400; font-size:12px; margin-left:2px;">MARE</span>
+                        @if(file_exists(public_path('images/logo.png')))
+                            <img src="{{ asset('images/logo.png') }}" alt="Futsal Mare Logo">
+                        @else
+                            <span style="width: 10px; height: 10px; background: var(--turf); border-radius: 2px; transform: rotate(45deg); box-shadow: 0 0 10px var(--turf);"></span>
+                        @endif
+                        FUTSAL<span style="color:var(--muted-2); font-family:var(--body); font-weight:400; font-size:12px; margin-left:2px;">MARE</span>
                     </a>
                     <p style="font-size: 13px; color: var(--muted); max-width: 300px; line-height: 1.6;">
                         Penyedia layanan arena futsal dengan rumput sintetis premium, sistem pencahayaan LED terarah, dan reservasi digital terintegrasi di Kota Baubau.
