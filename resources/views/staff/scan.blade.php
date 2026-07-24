@@ -165,7 +165,14 @@
                     </div>
                 </div>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="nav-link">&larr; Dashboard Admin</a>
+            
+            <!-- Tombol Keluar / Logout Sesi Scanner -->
+            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                @csrf
+                <button type="submit" class="nav-link" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; cursor: pointer;">
+                    🚪 Keluar Portal
+                </button>
+            </form>
         </div>
     </header>
 
