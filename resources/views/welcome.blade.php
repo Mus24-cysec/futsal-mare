@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Futsal Mare - Reservasi Lapangan Premium Kota Baubau</title>
     
-    <!-- TAMBAHKAN BARIS INI UNTUK MENGUBAH ICON TAB BROWSER -->
+    <!-- FAVICON KUSTOM -->
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -412,28 +412,20 @@
             </nav>
             
             <div class="nav-actions">
-                @if (Route::has('login'))
-                    @auth
-                        @php
-                            $user = auth()->user();
-                        @endphp
-
-                        @if (isset($user->is_admin) && $user->is_admin == 1)
-                            <a href="{{ route('admin.dashboard') }}" class="btn-ui btn-ui-primary btn-ui-sm">🛡️ DASHBOARD ADMIN</a>
-                        @elseif (isset($user->role) && $user->role === 'staff')
-                            <a href="{{ route('admin.staff.scan') }}" class="btn-ui btn-ui-primary btn-ui-sm">📲 TERMINAL SCANNER</a>
-                        @else
-                            <a href="{{ route('dashboard') }}" class="btn-ui btn-ui-primary btn-ui-sm">MEMBER DASHBOARD</a>
-                        @endif
-                    @else
-                        <a href="{{ route('admin.login') }}" style="color:var(--muted-2); font-family:var(--mono); font-size:10px; font-weight:700; text-transform:uppercase; text-decoration:none; margin-right:8px; display:flex; align-items:center; gap:4px;">
-                            <span>🛡️</span> Admin Portal
-                        </a>
-                        <a href="{{ route('login') }}" class="btn-ui btn-ui-ghost btn-ui-sm">MASUK</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn-ui btn-ui-primary btn-ui-sm">DAFTAR</a>
-                        @endif
-                    @endauth
+                @if (session()->has('admin_logged_in') || (auth()->check() && optional(auth()->user())->is_admin == 1))
+                    <a href="{{ route('admin.dashboard') }}" class="btn-ui btn-ui-primary btn-ui-sm">🛡️ DASHBOARD ADMIN</a>
+                @elseif (auth()->check() && optional(auth()->user())->role === 'staff')
+                    <a href="{{ route('admin.staff.scan') }}" class="btn-ui btn-ui-primary btn-ui-sm">📲 TERMINAL SCANNER</a>
+                @elseif (auth()->check())
+                    <a href="{{ route('dashboard') }}" class="btn-ui btn-ui-primary btn-ui-sm">MEMBER DASHBOARD</a>
+                @else
+                    <a href="{{ route('admin.login') }}" style="color:var(--muted-2); font-family:var(--mono); font-size:10px; font-weight:700; text-transform:uppercase; text-decoration:none; margin-right:8px; display:flex; align-items:center; gap:4px;">
+                        <span>🛡️</span> Admin Portal
+                    </a>
+                    <a href="{{ route('login') }}" class="btn-ui btn-ui-ghost btn-ui-sm">MASUK</a>
+                    @if (Route::has('register'))
+                        <a href="{{ route('register') }}" class="btn-ui btn-ui-primary btn-ui-sm">DAFTAR</a>
+                    @endif
                 @endif
             </div>
         </div>
@@ -468,14 +460,13 @@
                 </div>
             </div>
 
-            <!-- HERO BANNER IMAGE (hero-banner.png) -->
+            <!-- HERO BANNER IMAGE -->
             <div class="hero-banner-wrapper">
                 @if(file_exists(public_path('images/hero-banner.png')))
                     <img src="{{ asset('images/hero-banner.png') }}" alt="Futsal Mare Hero Banner">
                 @elseif(file_exists(public_path('images/lapangan/hero-banner.png')))
                     <img src="{{ asset('images/lapangan/hero-banner.png') }}" alt="Futsal Mare Hero Banner">
                 @else
-                    <!-- Fallback jika file gambar belum ada di folder image -->
                     <div style="height:380px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:var(--surface-2); color:var(--muted); font-family:var(--mono); text-align:center; padding:20px;">
                         <span style="font-size:36px; margin-bottom:10px;">🏟️</span>
                         <b style="color:white; margin-bottom:4px;">hero-banner.png</b>
@@ -627,7 +618,6 @@
                 <h2>Pertanyaan Sering Diajukan</h2>
                 <p>Punya kebingungan seputar pembayaran, reschedule, e-tiket, atau loyalty point? Temukan jawaban lengkapnya di bawah ini.</p>
                 
-                <!-- Live Search -->
                 <div class="faq-search-box">
                     <svg class="faq-search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -637,7 +627,6 @@
             </div>
 
             <div id="faqList" style="max-width: 800px;">
-                <!-- FAQ Item 1 -->
                 <div class="faq-item">
                     <button type="button" class="faq-btn" onclick="toggleFaq(this)">
                         <span>Bagaimana cara melakukan pemesanan lapangan di Futsal Mare?</span>
@@ -648,7 +637,6 @@
                     </div>
                 </div>
 
-                <!-- FAQ Item 2 -->
                 <div class="faq-item">
                     <button type="button" class="faq-btn" onclick="toggleFaq(this)">
                         <span>Metode pembayaran apa saja yang bisa digunakan?</span>
@@ -659,7 +647,6 @@
                     </div>
                 </div>
 
-                <!-- FAQ Item 3 -->
                 <div class="faq-item">
                     <button type="button" class="faq-btn" onclick="toggleFaq(this)">
                         <span>Apakah jadwal tanding bisa diubah (Reschedule)?</span>
@@ -670,7 +657,6 @@
                     </div>
                 </div>
 
-                <!-- FAQ Item 4 -->
                 <div class="faq-item">
                     <button type="button" class="faq-btn" onclick="toggleFaq(this)">
                         <span>Bagaimana cara melakukan check-in saat tiba di arena?</span>
@@ -681,7 +667,6 @@
                     </div>
                 </div>
 
-                <!-- FAQ Item 5 -->
                 <div class="faq-item">
                     <button type="button" class="faq-btn" onclick="toggleFaq(this)">
                         <span>Bagaimana cara menghitung dan menggunakan Loyalty Point?</span>
