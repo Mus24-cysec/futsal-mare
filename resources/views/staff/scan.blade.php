@@ -94,6 +94,7 @@
             font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase;
             font-weight: 700; border: 1px solid var(--line-soft); padding: 9px 15px; border-radius: var(--radius-sm);
             text-decoration: none; transition: all .2s var(--ease); background: var(--surface);
+            display: inline-flex; align-items: center; gap: 6px;
         }
         .nav-link:hover { color: #fff; border-color: var(--line-strong); background: var(--surface-raised); }
 
@@ -151,7 +152,14 @@
                     </div>
                 </div>
             </div>
-            <a href="{{ route('admin.dashboard') }}" class="nav-link">&larr; Dashboard Admin</a>
+            
+            <!-- Tombol Keluar / Logout Sesi Scanner -->
+            <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
+                @csrf
+                <button type="submit" class="nav-link" style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5; cursor: pointer;">
+                    🚪 Keluar Portal
+                </button>
+            </form>
         </div>
     </header>
 
