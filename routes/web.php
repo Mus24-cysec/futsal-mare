@@ -41,7 +41,7 @@ Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCa
 // ==========================================
 // 3. PROTECTED ROUTES (Member & User Verified)
 // ==========================================
-Route::middleware(['auth', 'verified', 'role:member'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
 
     // Pembatalan & Konfirmasi Pembayaran Instan (Snap Gateway)
     Route::post('/reservasi/{nomor_reservasi}/batal-instan', [ReservasiController::class, 'cancelPendingInstant'])->name('reservasi.cancelInstant');
