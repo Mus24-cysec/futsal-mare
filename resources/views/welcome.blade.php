@@ -520,8 +520,15 @@
                             </div>
                         </div>
 
+                        <!-- TOMBOL RESERVASI (DIBATASI UNTUK ADMIN/STAFF) -->
                         <div style="padding: 0 26px 26px 26px;">
-                            <a href="{{ route('reservasi.create', $lapangan->id) }}" class="btn-ui btn-ui-primary btn-ui-sm" style="width:100%;">Amankan Slot Waktu</a>
+                            @if(session()->has('admin_logged_in') || (auth()->check() && (optional(auth()->user())->is_admin == 1 || optional(auth()->user())->role === 'staff')))
+                                <div style="font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: center; padding: 12px; background: rgba(255,255,255,0.03); border: 1px dashed rgba(241,245,249,0.1); border-radius: var(--radius-sm);">
+                                    🔒 Akses Reservasi Khusus Member
+                                </div>
+                            @else
+                                <a href="{{ route('reservasi.create', $lapangan->id) }}" class="btn-ui btn-ui-primary btn-ui-sm" style="width:100%;">Amankan Slot Waktu</a>
+                            @endif
                         </div>
                     </div>
                 @empty
