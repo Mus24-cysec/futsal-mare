@@ -5,9 +5,10 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany; // Tambahkan import ini
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Relations\HasOne; // Tambahkan import ini untuk tipe data relasi
 
 class User extends Authenticatable
 {
@@ -55,5 +56,14 @@ class User extends Authenticatable
     public function membership(): HasOne
     {
         return $this->hasOne(Membership::class);
+    }
+
+    /**
+     * 📅 Relasi One-to-Many ke Model Reservasi
+     * Menghubungkan user dengan daftar riwayat pemesanan lapangan futsal.
+     */
+    public function reservasis(): HasMany
+    {
+        return $this->hasMany(Reservasi::class);
     }
 }
