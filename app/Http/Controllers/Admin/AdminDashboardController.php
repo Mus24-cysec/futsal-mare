@@ -359,8 +359,11 @@ class AdminDashboardController extends Controller
 
         try {
             DB::transaction(function () use ($member) {
+                // Hapus relasi terkait terlebih dahulu untuk menghindari Foreign Key Constraint Violation
                 $member->reservasis()->delete();
                 $member->membership()->delete();
+                
+                // Hapus data user utama
                 $member->delete();
             });
 
@@ -369,7 +372,7 @@ class AdminDashboardController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Gagal hapus member ID {$id}: {$e->getMessage()}");
-            return back()->with('error', 'Terjadi kesalahan sistem saat menghapus data member.');
+            return back()->with('error', 'Terjadi kesalahan sistem saat menghapus data member. Detail: ' . $e->getMessage());
         }
     }
 
