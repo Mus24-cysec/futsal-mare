@@ -181,17 +181,17 @@ class ReservasiController extends Controller
 
             // 5. SIMPAN TRANSAKSI BARU (Status awal: Waiting Payment + expired_at)
             $reservasi = Reservasi::create([
-                'user_id'                   => Auth::id(),
-                'lapangan_id'               => $request->lapangan_id,
-                'nomor_reservasi'           => $nomor_reservasi,
-                'tanggal_main'              => $request->tanggal_main,
-                'jam_mulai'                 => $start_time,
-                'jam_selesai'               => $end_time,
-                'subtotal_sebelum_diskon'   => $subtotal,
-                'diskon_persen'             => $diskonPersen,
-                'total_harga'               => (int) $total_harga,
-                'status'                    => 'Waiting Payment',
-                'expired_at'                => now()->addMinutes(self::MENIT_KEDALUARSA_PEMBAYARAN),
+                'user_id'                 => Auth::id(),
+                'lapangan_id'             => $request->lapangan_id,
+                'nomor_reservasi'         => $nomor_reservasi,
+                'tanggal_main'            => $request->tanggal_main,
+                'jam_mulai'               => $start_time,
+                'jam_selesai'             => $end_time,
+                'subtotal_sebelum_diskon' => $subtotal,
+                'diskon_persen'           => $diskonPersen,
+                'total_harga'             => (int) $total_harga,
+                'status'                  => 'Waiting Payment',
+                'expired_at'              => now()->addMinutes(self::MENIT_KEDALUARSA_PEMBAYARAN),
             ]);
 
             // 6. BUAT SNAP TOKEN MIDTRANS
@@ -366,7 +366,7 @@ class ReservasiController extends Controller
     }
 
     /**
-     * Terapkan efek pembayaran sukses: ubah status jadi Confirmed, berikan poin loyalitas,
+     * Terapkan efek pembayaran sukses: ubah status jadi Confirmed (Lunas), berikan poin loyalitas,
      * dan evaluasi kenaikan Tier Membership secara otomatis. IDEMPOTENT.
      */
     private function konfirmasiPembayaranSukses(Reservasi $reservasi, ?string $paymentType = null): void
@@ -375,6 +375,7 @@ class ReservasiController extends Controller
             return;
         }
 
+        // Status diubah menjadi Confirmed agar langsung terbaca Lunas di dashboard admin & member
         $reservasi->update([
             'status'            => 'Confirmed',
             'metode_pembayaran' => $paymentType,
@@ -630,6 +631,7 @@ class ReservasiController extends Controller
             }
 
             if ($reservasi->status === 'Confirmed') {
+                // Diubah menjadi Completed saat berhasil check-in di gerbang oleh staff
                 $reservasi->update(['status' => 'Completed']);
 
                 return response()->json([
