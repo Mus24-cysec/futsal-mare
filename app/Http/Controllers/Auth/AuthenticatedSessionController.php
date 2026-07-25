@@ -30,9 +30,10 @@ class AuthenticatedSessionController extends Controller
         // 2. Regenerasi session untuk keamanan
         $request->session()->regenerate();
 
-        // 3. Pengecekan ROLE untuk pengalihan (Routing)
-        // Jika user adalah admin, arahkan ke dashboard admin
-        if (Auth::user()->is_admin == 1) {
+        $user = Auth::user();
+
+        // 3. Pengecekan ROLE untuk pengalihan (Routing) secara ketat
+        if ($user && (int) $user->is_admin === 1) {
             return redirect()->route('admin.dashboard');
         }
 

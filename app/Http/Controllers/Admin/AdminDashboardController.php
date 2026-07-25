@@ -15,12 +15,6 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminDashboardController extends Controller
 {
-    /**
-     * ==========================================
-     * 🛡️ MODUL KHUSUS: AUTENTIKASI PORTAL ADMIN
-     * ==========================================
-     */
-
     public function showLoginForm()
     {
         if (Auth::check() && Auth::user()->is_admin) { 
@@ -38,7 +32,9 @@ class AdminDashboardController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            if (Auth::user()->is_admin) {
+            $user = Auth::user();
+
+            if ((int) $user->is_admin === 1) {
                 $request->session()->regenerate();
                 return redirect()->route('admin.dashboard')
                     ->with('success', 'Selamat Datang Kembali di Panel Kontrol Utama!');
@@ -55,12 +51,6 @@ class AdminDashboardController extends Controller
             ->withInput();
     }
 
-    /**
-     * ==========================================
-     * 🎫 MODUL KHUSUS: AUTENTIKASI PORTAL STAFF
-     * ==========================================
-     */
-
     public function loginStaff(Request $request)
     {
         $credentials = $request->validate([
@@ -75,11 +65,8 @@ class AdminDashboardController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::user();
 
-            // Memastikan akun yang login memiliki hak akses operasional (is_admin == 1)
-            if ($user->is_admin == 1) {
+            if ((int) $user->is_admin === 1) {
                 $request->session()->regenerate();
-
-                // Arahkan staff langsung ke terminal/halaman scanner QR
                 return redirect()->route('admin.staff.scan')
                     ->with('success', 'Selamat bekerja! Sesi Operator Terminal berhasil dibuka.');
             }
@@ -95,24 +82,16 @@ class AdminDashboardController extends Controller
             ->withInput();
     }
 
-    /**
-     * ==========================================
-     * 📊 MODUL 1: DASHBOARD OVERVIEW ADMIN
-     * ==========================================
-     */
     public function index()
     {
-        // Metrik Ringkasan (Stat Cards)
         $totalPendapatan = Reservasi::whereIn('status', ['Confirmed', 'Completed'])->sum('total_harga');
         $matchTerkonfirmasi = Reservasi::where('status', 'Confirmed')->count();
         $totalMember = User::has('membership')->where('is_admin', 0)->count();
         
-        // Data Table Reservasi Terbaru
         $reservasis = Reservasi::with(['lapangan', 'user.membership'])
             ->latest()
             ->paginate(10);
 
-        // Grafik Utilisasi 7 Hari Terakhir
         $startDate = Carbon::now()->subDays(6)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
 
@@ -137,7 +116,6 @@ class AdminDashboardController extends Controller
                         $start = Carbon::parse($reservasi->jam_mulai);
                         $end = Carbon::parse($reservasi->jam_selesai);
                         
-                        // Perhitungan presisi dalam jam (mendukung pecahan jam)
                         $diffInMinutes = $start->diffInMinutes($end);
                         return max(1, round($diffInMinutes / 60, 1));
                     }
@@ -158,11 +136,6 @@ class AdminDashboardController extends Controller
         ));
     }
 
-    /**
-     * ==========================================
-     * 📅 MODUL 2: LOG & PENGELOLAAN RESERVASI
-     * ==========================================
-     */
     public function reservasi(Request $request)
     {
         $status = $request->get('status');
@@ -254,22 +227,12 @@ class AdminDashboardController extends Controller
         }
     }
 
-    /**
-     * ==========================================
-     * 🌱 MODUL 3: KELOLA ARENA LAPANGAN
-     * ==========================================
-     */
     public function lapangan()
     {
         $lapangans = Lapangan::all();
         return view('admin.lapangan.index', compact('lapangans'));
     }
 
-    /**
-     * ==========================================
-     * 👥 MODUL 4: LOYALITAS & DATA MEMBER
-     * ==========================================
-     */
     public function member(Request $request)
     {
         $search = $request->get('search');
@@ -359,11 +322,8 @@ class AdminDashboardController extends Controller
 
         try {
             DB::transaction(function () use ($member) {
-                // Hapus relasi terkait terlebih dahulu untuk menghindari Foreign Key Constraint Violation
                 $member->reservasis()->delete();
                 $member->membership()->delete();
-                
-                // Hapus data user utama
                 $member->delete();
             });
 
@@ -372,15 +332,10 @@ class AdminDashboardController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Gagal hapus member ID {$id}: {$e->getMessage()}");
-            return back()->with('error', 'Terjadi kesalahan sistem saat menghapus data member. Detail: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan sistem saat menghapus data member.');
         }
     }
 
-    /**
-     * ==========================================
-     * 🔑 MODUL 5: PENGELOLAAN HAK AKSES & ROLE
-     * ==========================================
-     */
     public function role(Request $request)
     {
         $search = $request->get('search');
@@ -414,9 +369,11 @@ class AdminDashboardController extends Controller
         }
 
         try {
-            $user->update([
-                'is_admin' => (int) $request->is_admin,
-            ]);
+            DB::transaction(function () use ($user, $request) {
+                $user->update([
+                    'is_admin' => (int) $request->is_admin,
+                ]);
+            });
 
             $statusText = $user->is_admin == 1 ? 'Administrator (Admin)' : 'Member';
 

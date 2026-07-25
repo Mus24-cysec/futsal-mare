@@ -6,7 +6,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany; // Tambahkan import ini
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -24,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin', // Wajib didaftarkan agar bisa di-update dari panel admin
     ];
 
     /**
@@ -51,7 +52,6 @@ class User extends Authenticatable
 
     /**
      * 🏆 Relasi One-to-One ke Model Membership
-     * Menghubungkan user dengan tingkatan tier loyalitas mereka.
      */
     public function membership(): HasOne
     {
@@ -60,7 +60,6 @@ class User extends Authenticatable
 
     /**
      * 📅 Relasi One-to-Many ke Model Reservasi
-     * Menghubungkan user dengan daftar riwayat pemesanan lapangan futsal.
      */
     public function reservasis(): HasMany
     {
